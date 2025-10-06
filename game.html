@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guess The Try Game</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .answer-btn.correct {
+            background-color: #22c55e !important; /* green-500 */
+            border-color: #16a34a !important; /* green-600 */
+            color: white !important;
+        }
+        .answer-btn.incorrect {
+            background-color: #ef4444 !important; /* red-500 */
+            border-color: #dc2626 !important; /* red-600 */
+            color: white !important;
+        }
+        .answer-btn:disabled {
+            opacity: 0.8;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white flex items-center justify-center min-h-screen p-4">
+
+    <div id="game-container" class="w-full max-w-2xl mx-auto">
+        
+        <header class="text-center mb-6">
+            <h1 class="text-4xl font-bold text-green-400">Guess The Try!</h1>
+            <p class="text-gray-400 mt-1">Can you identify the try scorer from the diagram?</p>
+        </header>
+
+        <main id="question-area" class="bg-gray-800 p-6 rounded-2xl shadow-2xl">
+            <!-- Game Info Header -->
+            <div class="flex justify-between items-center mb-4">
+                <div id="question-counter" class="text-lg font-medium text-gray-300">Question 1 / 22</div>
+                <div id="score-counter" class="text-lg font-medium text-gray-300">Score: <span id="score" class="font-bold text-green-400">0</span></div>
+            </div>
+
+            <!-- Try Diagram Image -->
+            <div class="mb-6 bg-gray-900 rounded-lg overflow-hidden border-2 border-gray-700">
+                <img id="try-image" src="" alt="A diagram illustrating a rugby try" class="w-full h-auto object-contain">
+                 <!-- Note for user about placeholder images -->
+                <div id="image-note" class="p-3 bg-yellow-900 text-center text-xs text-yellow-200">
+                    <strong>Prototype Note:</strong> This image should be edited to remove the answers for the real game!
+                </div>
+            </div>
+
+            <!-- Question and Options -->
+            <div>
+                <h2 id="question-text" class="text-xl font-semibold text-center mb-5">Which player scored this try?</h2>
+                <div id="options-container" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <!-- Answer buttons will be dynamically inserted here -->
+                </div>
+            </div>
+
+             <!-- Feedback Message -->
+            <div id="feedback-message" class="text-center text-2xl font-bold mt-6 h-8"></div>
+
+
+            <!-- Next Button -->
+            <div class="mt-6 text-center">
+                <button id="next-button" class="hidden bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-lg transition-colors w-full sm:w-auto">Next Question</button>
+            </div>
+        </main>
+        
+        <!-- Final Score Screen -->
+        <div id="final-score-area" class="hidden text-center bg-gray-800 p-8 rounded-2xl shadow-2xl">
+            <h2 class="text-3xl font-bold mb-2">Game Over!</h2>
+            <p class="text-xl text-gray-300 mb-4">Your final score is:</p>
+            <p id="final-score" class="text-6xl font-extrabold text-green-400 mb-6">0</p>
+            <button id="restart-button" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-lg transition-colors w-full sm:w-auto">Play Again</button>
+        </div>
+
+    </div>
+
+    <script>
+        const gameData = [
+            {
+                questionImage: "images/MoodieTry.png",
+                answerImage: "images/MoodieTry.png",
+                options: ["Cheslin Kolbe", "Kurt-Lee Arendse", "Canan Moodie", "Makazole Mapimpi"],
+                correctAnswer: "Canan Moodie",
+                questionText: "Which Springbok scored this try against Australia?"
+            },
+            {
+                questionImage: "images/MarxTry.png",
+                answerImage: "images/MarxTry.png",
+                options: ["Malcolm Marx", "Bongi Mbonambi", "Siya Kolisi", "Pieter-Steph du Toit"],
+                correctAnswer: "Malcolm Marx",
+                questionText: "Which forward scored this try from close range against Argentina?"
+            },
+            {
+                questionImage: "images/Etsebeth.png",
+                answerImage: "images/Etsebeth.png",
+                options: ["Franco Mostert", "Eben Etzebeth", "Lood de Jager", "RG Snyman"],
+                correctAnswer: "Eben Etzebeth",
+                questionText: "Which towering lock powered over for this try?"
+            },
+            {
+                questionImage: "images/ReinachTry1.png",
+                answerImage: "images/ReinachTry1.png",
+                options: ["Faf de Klerk", "Cobus Reinach", "Jaden Hendrikse", "Grant Williams"],
+                correctAnswer: "Cobus Reinach",
+                questionText: "Which scrum-half sniped around the ruck to score this try?"
+            },
+            {
+                questionImage: "images/SmithTry.png",
+                answerImage: "images/SmithTry.png",
+                options: ["Kwagga Smith", "Duane Vermeulen", "Jasper Wiese", "Marco van Staden"],
+                correctAnswer: "Kwagga Smith",
+                questionText: "Which dynamic loose forward scored this try?"
+            },
+            {
+                questionImage: "images/KolbeTry.png",
+                answerImage: "images/KolbeTry.png",
+                options: ["Willie le Roux", "Cheslin Kolbe", "Kurt-Lee Arendse", "Makazole Mapimpi"],
+                correctAnswer: "Cheslin Kolbe",
+                questionText: "Which speedster scored this incredible long-range try against New Zealand?"
+            },
+            {
+                questionImage: "images/KolbeTry1.png",
+                answerImage: "images/KolbeTry1.png",
+                options: ["Cheslin Kolbe", "Canan Moodie", "Jesse Kriel", "Kurt-Lee Arendse"],
+                correctAnswer: "Cheslin Kolbe",
+                questionText: "Who scored this try?"
+            }
+        ];
+
+        // DOM Elements
+        const questionArea = document.getElementById('question-area');
+        const finalScoreArea = document.getElementById('final-score-area');
+        const questionCounterEl = document.getElementById('question-counter');
+        const scoreCounterEl = document.getElementById('score');
+        const tryImageEl = document.getElementById('try-image');
+        const questionTextEl = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const feedbackMessageEl = document.getElementById('feedback-message');
+        const nextButton = document.getElementById('next-button');
+        const restartButton = document.getElementById('restart-button');
+        const finalScoreEl = document.getElementById('final-score');
+        const imageNoteEl = document.getElementById('image-note');
+
+
+        // Game State
+        let currentQuestionIndex = 0;
+        let score = 0;
+
+        function startGame() {
+            // Shuffle game data for variety
+            gameData.sort(() => Math.random() - 0.5);
+            currentQuestionIndex = 0;
+            score = 0;
+            questionArea.classList.remove('hidden');
+            finalScoreArea.classList.add('hidden');
+            nextButton.classList.add('hidden');
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            // Reset state from previous question
+            optionsContainer.innerHTML = '';
+            feedbackMessageEl.textContent = '';
+            nextButton.classList.add('hidden');
+            imageNoteEl.classList.remove('hidden');
+            feedbackMessageEl.classList.remove('text-green-500', 'text-red-500');
+
+
+            const currentQuestion = gameData[currentQuestionIndex];
+
+            // Update UI elements
+            questionCounterEl.textContent = `Question ${currentQuestionIndex + 1} / ${gameData.length}`;
+            scoreCounterEl.textContent = score;
+            tryImageEl.src = currentQuestion.questionImage;
+            questionTextEl.textContent = currentQuestion.questionText;
+
+            // Create answer buttons
+            currentQuestion.options.forEach(option => {
+                const button = document.createElement('button');
+                button.textContent = option;
+                button.classList.add('answer-btn', 'w-full', 'bg-gray-700', 'hover:bg-gray-600', 'text-white', 'font-semibold', 'py-3', 'px-4', 'rounded-lg', 'transition-colors', 'duration-200');
+                button.onclick = () => selectAnswer(option, button);
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function selectAnswer(selectedOption, button) {
+            const currentQuestion = gameData[currentQuestionIndex];
+            const isCorrect = selectedOption === currentQuestion.correctAnswer;
+
+            // Disable all buttons
+            Array.from(optionsContainer.children).forEach(btn => {
+                btn.disabled = true;
+                // Reveal correct answer
+                if(btn.textContent === currentQuestion.correctAnswer) {
+                    btn.classList.add('correct');
+                }
+            });
+
+            if (isCorrect) {
+                score += 10;
+                scoreCounterEl.textContent = score;
+                feedbackMessageEl.textContent = 'Correct!';
+                feedbackMessageEl.classList.add('text-green-500');
+                feedbackMessageEl.classList.remove('text-red-500');
+                button.classList.add('correct');
+            } else {
+                feedbackMessageEl.textContent = `Incorrect! It was ${currentQuestion.correctAnswer}.`;
+                feedbackMessageEl.classList.add('text-red-500');
+                feedbackMessageEl.classList.remove('text-green-500');
+                button.classList.add('incorrect');
+            }
+
+            // Show the answer image
+            tryImageEl.src = currentQuestion.answerImage;
+            imageNoteEl.classList.add('hidden');
+
+
+            // Show next button
+            nextButton.classList.remove('hidden');
+        }
+
+        function handleNextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < gameData.length) {
+                loadQuestion();
+            } else {
+                showFinalScore();
+            }
+        }
+
+        function showFinalScore() {
+            questionArea.classList.add('hidden');
+            finalScoreArea.classList.remove('hidden');
+            finalScoreEl.textContent = score;
+        }
+        
+        // Event Listeners
+        nextButton.addEventListener('click', handleNextQuestion);
+        restartButton.addEventListener('click', startGame);
+
+        // Initial Load
+        startGame();
+
+    </script>
+</body>
+</html>
+
