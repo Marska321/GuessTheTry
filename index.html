@@ -127,6 +127,27 @@
                 options: ["Cheslin Kolbe", "Canan Moodie", "Jesse Kriel", "Kurt-Lee Arendse"],
                 correctAnswer: "Cheslin Kolbe",
                 questionText: "Who scored this try?"
+            },
+            {
+                questionImage: "images/DuToitTry.png",
+                answerImage: "images/DuToitTry.png",
+                options: ["Pieter-Steph du Toit", "Siya Kolisi", "Kwagga Smith", "Jasper Wiese"],
+                correctAnswer: "Pieter-Steph du Toit",
+                questionText: "Which flanker scored this try late in the game against Argentina?"
+            },
+            {
+                questionImage: "images/LibbokTry.png",
+                answerImage: "images/LibbokTry.png",
+                options: ["Handre Pollard", "Elton Jantjies", "Damian Willemse", "Manie Libbok"],
+                correctAnswer: "Manie Libbok",
+                questionText: "Which fly-half finished this slick backline move?"
+            },
+            {
+                questionImage: "images/SnymanTry.png",
+                answerImage: "images/SnymanTry.png",
+                options: ["Pieter-Steph du Toit", "Eben Etzebeth", "RG Snyman", "Franco Mostert"],
+                correctAnswer: "RG Snyman",
+                questionText: "Which 'Viking' lock crashed over for this try against the All Blacks?"
             }
         ];
 
@@ -165,7 +186,6 @@
             optionsContainer.innerHTML = '';
             feedbackMessageEl.textContent = '';
             nextButton.classList.add('hidden');
-            imageNoteEl.classList.remove('hidden');
             feedbackMessageEl.classList.remove('text-green-500', 'text-red-500');
 
 
@@ -216,7 +236,6 @@
 
             // Show the answer image
             tryImageEl.src = currentQuestion.answerImage;
-            imageNoteEl.classList.add('hidden');
 
 
             // Show next button
@@ -248,4 +267,5 @@
     </script>
 </body>
 </html>
+
 
